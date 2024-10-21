@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2113">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+    span.Apple-tab-span {white-space:pre}
+  </style>
+</head>
+<body>
+<p class="p1">// Ocultar algunas columnas en el listado de productos y añadir una nueva personalizada</p>
+<p class="p2"><br></p>
+<p class="p1">add_filter( 'manage_edit-product_columns', 'esl_change_product_columns',10, 1 );</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1">function esl_change_product_columns( $columns ) {</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span>// Ocultamos algunas columnas que no necesitamos para ganar espacio</p>
+<p class="p1"><span class="Apple-tab-span">	</span>unset($columns['product_tag']);</p>
+<p class="p1"><span class="Apple-tab-span">	</span>unset($columns['sku']);</p>
+<p class="p1"><span class="Apple-tab-span">	</span>unset($columns['product_type']);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span>// añadimos una nueva columna personalizada</p>
+<p class="p1"><span class="Apple-tab-span">	</span>$columns['ubicacion'] = 'Ubicación';<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span>return $columns;</p>
+<p class="p2"><br></p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1">// Mostrar valores de un campo personalizado en una columna del listado de productos</p>
+<p class="p2"><br></p>
+<p class="p1">add_action('manage_product_posts_custom_column', 'esl_product_columns_content', 5, 2);</p>
+<p class="p2"><br></p>
+<p class="p1">function esl_product_columns_content($column_name, $post_ID) {</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span>if ($column_name == 'ubicacion') {</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>//Buscamos el valor del campo personalizado 'proveedor' y los mostramos.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>$proveedor = get_field ('ubicacion', $post_ID);</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>echo $proveedor;</p>
+<p class="p1"><span class="Apple-tab-span">	</span>}</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1">/*</p>
+<p class="p1">* AÑADIR CAMPO DNI EN EL FORMULARIO DE PAGO</p>
+<p class="p1">*/</p>
+<p class="p1">function woo_custom_field_checkout($checkout) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>echo '&lt;div id="additional_checkout_field"&gt;';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>woocommerce_form_field( 'dni', array( // Identificador del campo<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>'type'<span class="Apple-converted-space">          </span>=&gt; 'text',</p>
+<p class="p1"><span class="Apple-converted-space">    </span>'class' <span class="Apple-converted-space">        </span>=&gt; array('my-field-class form-row-wide'),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>'required'<span class="Apple-converted-space">      </span>=&gt; true,<span class="Apple-converted-space">            </span>// ¿El campo es obligatorio 'true' o 'false'?</p>
+<p class="p1"><span class="Apple-converted-space">    </span>'label' <span class="Apple-converted-space">      </span>=&gt; __('DNI'), <span class="Apple-converted-space">  </span>// Nombre del campo<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>'placeholder' <span class="Apple-converted-space">  </span>=&gt; __('Ej: 38456796'), // Texto de apoyo que se muestra dentro del campo</p>
+<p class="p1"><span class="Apple-converted-space">  </span>), $checkout-&gt;get_value( 'dni' ));<span class="Apple-converted-space">    </span>// Identificador del campo<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>echo '&lt;/div&gt;';<span class="Apple-converted-space"> </span></p>
+<p class="p1">}</p>
+<p class="p1">add_action( 'woocommerce_after_checkout_billing_form', 'woo_custom_field_checkout' );</p>
+<p class="p1">/*</p>
+<p class="p1">* INCLUYE NIF/CIF EN LOS DETALLES DEL PEDIDO CON EL NUEVO CAMPO</p>
+<p class="p1">*/</p>
+<p class="p1">function woo_custom_field_checkout_update_order($order_id) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if ( ! empty( $_POST['dni'] ) ) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>update_post_meta( $order_id, 'DNI', sanitize_text_field( $_POST['nif'] ) );</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">}</p>
+<p class="p1">add_action( 'woocommerce_checkout_update_order_meta', 'woo_custom_field_checkout_update_order' );</p>
+<p class="p1">/*</p>
+<p class="p1">* MUESTRA EL VALOR DEL CAMPO DNI LA PÁGINA DE MODIFICACIÓN DEL PEDIDO</p>
+<p class="p1">*/</p>
+<p class="p1">function woo_custom_field_checkout_edit_order($order){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>echo '&lt;p&gt;&lt;strong&gt;'.__('DNI').':&lt;/strong&gt; ' . get_post_meta( $order-&gt;id, 'DNI', true ) . '&lt;/p&gt;';</p>
+<p class="p1">}</p>
+<p class="p1">add_action( 'woocommerce_admin_order_data_after_billing_address', 'woo_custom_field_checkout_edit_order', 10, 1 );</p>
+<p class="p1">/*</p>
+<p class="p1">* INCLUYE EL CAMPO DNI EN EL CORREO ELECTRÓNICO DE AVISO A TU CLIENTE</p>
+<p class="p1">*/</p>
+<p class="p1">function woo_custom_field_checkout_email($keys) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$keys[] = 'DNI';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return $keys;</p>
+<p class="p1">}</p>
+<p class="p1">add_filter('woocommerce_email_order_meta_keys', 'woo_custom_field_checkout_email');</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1">/**</p>
+<p class="p1"><span class="Apple-converted-space"> </span>* Hide shipping rates when free shipping is available.</p>
+<p class="p1"><span class="Apple-converted-space"> </span>* Updated to support WooCommerce 2.6 Shipping Zones.</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*</p>
+<p class="p1"><span class="Apple-converted-space"> </span>* @param array $rates Array of rates found for the package.</p>
+<p class="p1"><span class="Apple-converted-space"> </span>* @return array</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*/</p>
+<p class="p1">function my_hide_shipping_when_free_is_available( $rates ) {</p>
+<p class="p1"><span class="Apple-tab-span">	</span>$free = array();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span>foreach ( $rates as $rate_id =&gt; $rate ) {</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if ( 'free_shipping' === $rate-&gt;method_id ) {</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>$free[ $rate_id ] = $rate;</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>break;</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p1"><span class="Apple-tab-span">	</span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span>return ! empty( $free ) ? $free : $rates;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">add_filter( 'woocommerce_package_rates', 'my_hide_shipping_when_free_is_available', 100 );</p>
+</body>
+</html>
